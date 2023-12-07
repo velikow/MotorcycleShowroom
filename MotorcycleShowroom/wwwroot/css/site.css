@@ -1,4 +1,5 @@
 html {
+  color:white;
   font-size: 14px;
 }
 
@@ -15,6 +16,23 @@ html {
 
 body {
   margin-bottom: 60px;
-  background-color:aqua
+  background-image: url(websitebackground.webp);
+  background-size: 100%;
       
+}
+.navbar{
+   background-color: black;
+}
+h1 , h2 , h3 , h4 , td , th , dt , d1 , dd{ 
+    color:white;
+    font-family:bold;
+    
+
+}
+p , p4{
+    color:white;
+}
+h1{
+    font-family:fantasy;
+    font-size:larger;
 }
