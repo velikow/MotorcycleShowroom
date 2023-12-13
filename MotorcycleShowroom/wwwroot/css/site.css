@@ -10,29 +10,115 @@ html {
 }
 
 html {
+
   position: relative;
   min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
-  background-image: url(websitebackground.webp);
-  background-size: 100%;
-      
+    margin-bottom: 60px;
+    background-image: url(websitebackground.webp);
+    background-position: center;
+    background-size: cover;
+    
 }
 .navbar{
    background-color: black;
 }
-h1 , h2 , h3 , h4 , td , th , dt , d1 , dd{ 
+h1 , h2 , h3 , h4 , td , th , dt, d1, dd{ 
     color:white;
     font-family:bold;
     
 
 }
-p , p4{
+p , p4 {
     color:white;
 }
 h1{
     font-family:fantasy;
     font-size:larger;
 }
+a{
+    color:white;
+}
+.form-label {
+    color: white;
+    
+}
+.input.form-control {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 10px;
+    margin-left: -50px;
+}
+input.form-control:hover, input.form-control:focus {
+    background-color: black;
+    line-height:2;
+    
+}
+h4{
+    margin-left:-100px
+}
+.row {
+    margin-left: -120px;
+    margin-top: -50px;
+    
+}
+.btn-primary {
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 45px;
+    background-color: white;
+    background-size: 50px;
+    color:black;
+}
+    .btn-primary:hover {
+        background-color: black;
+        color: white;
+        transition: 0.4s;
+    }
+hr{
+    margin-top:auto;
+}
+.col-md-6 col-md-offset-2{
+    margin-top:150px;
+}
+button {
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 45px;
+    background-color: white;
+    background-size:50px;
+}
+    button:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+        background-color: black;
+        color: white;
+        transition:0.4s;
+    }
+    .main-pb-3{
+        margin-top:150px;
+    }
+logo.png {
+    border-radius: 45px;
+}
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
