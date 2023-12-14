@@ -20,6 +20,8 @@ body {
     background-image: url(websitebackground.webp);
     background-position: center;
     background-size: cover;
+    margin: 0;
+    padding: 0;
     
 }
 .navbar{
@@ -41,31 +43,23 @@ h1{
 a{
     color:white;
 }
-.form-label {
-    color: white;
-    
-}
 .input.form-control {
-    background-color: #04AA6D;
+    background-color: black;
     color: white;
     padding: 16px;
     font-size: 16px;
     border: none;
     cursor: pointer;
-    margin-bottom: 10px;
-    margin-left: -50px;
+    margin-left:50px;
+
 }
 input.form-control:hover, input.form-control:focus {
-    background-color: black;
-    line-height:2;
-    
+    background-color: black;   
 }
 h4{
-    margin-left:-100px
-}
-.row {
-    margin-left: -120px;
-    margin-top: -50px;
+   font-family:fantasy;
+   margin-top:25px;
+   margin-left:-90px;
     
 }
 .btn-primary {
@@ -85,9 +79,8 @@ h4{
 hr{
     margin-top:auto;
 }
-.col-md-6 col-md-offset-2{
-    margin-top:150px;
-}
+
+   
 button {
     border: none;
     text-decoration: none;
@@ -108,6 +101,72 @@ button {
 logo.png {
     border-radius: 45px;
 }
+.form-floatingregister {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);  
+    color: white;
+    transition: 0.4s;
+    margin-top:8%;
+}
+.rowregister {
+    justify-content: center;
+    align-items: center;
+    display:flex;
+    margin-left:350px;
+
+}
+hReg {
+    margin-left: 71vh;
+    font-family: fantasy;
+    color: white;
+    font-size: larger;
+}
+h20 {
+    font-family: fantasy;
+    color: white;
+    font-size: larger;
+    margin-left:10vh;
+}
+hr{
+    display:none;
+}
+.Search {
+    width: 350px;
+    margin-left: -90px;
+}
+.loginpage {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    
+}
+hlog {
+    margin-left: 80vh;
+    font-family: fantasy;
+    color: white;
+    font-size: larger;
+}
+
+
+.form-floatinglogin {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+    color: white;
+    transition: 0.4s;
+    margin-top: 8%;
+}
+.input.form-label {
+    background-color: black;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    margin-left: 50px;
+}
+input.form-login:hover, input.form-login:focus {
+    background-color: black;
+    color:white;
+}
+
 
 
 
