@@ -181,12 +181,14 @@ input.form-login:hover, input.form-login:focus {
     width:320px;
     height:25px;
     text-align:center;
+    margin-left:-10vh;
 }
     .nav-profile:hover, .nav-linkprofile:hover {
         box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
         background-color: black;
         color: white;
         transition: 0.4s;
+        margin-left: -10vh;
     }
     hAuthenticate{
         margin-left:10vh;
