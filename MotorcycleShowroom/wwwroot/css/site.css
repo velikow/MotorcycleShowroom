@@ -72,6 +72,7 @@ h4{
     color:black;
 }
     .btn-primary:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
         background-color: black;
         color: white;
         transition: 0.4s;
@@ -166,6 +167,36 @@ input.form-login:hover, input.form-login:focus {
     background-color: black;
     color:white;
 }
+.form-login{
+    color:white;
+}
+.nav-profile, .nav-linkprofile {
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 60px;
+    background-color: white;
+    background-size: 60px;
+    color:black;
+    width:320px;
+    height:25px;
+    text-align:center;
+}
+    .nav-profile:hover, .nav-linkprofile:hover {
+        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+        background-color: black;
+        color: white;
+        transition: 0.4s;
+    }
+    hAuthenticate{
+        margin-left:10vh;
+        color:white;
+        font-family:fantasy;
+    }
+    label.control-label{
+        color:white;
+    }
+
 
 
 
