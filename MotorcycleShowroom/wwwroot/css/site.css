@@ -198,6 +198,24 @@ input.form-login:hover, input.form-login:focus {
     label.control-label{
         color:white;
     }
+/* Add this to your site.css or in a <style> tag in your view */
+.btn-like {
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-white {
+    background-color: white;
+    color: black;
+}
+
+.btn-black {
+    background-color: black;
+    color: white;
+}
+
 
 
 

@@ -1,4 +1,4 @@
-﻿ @model MotorcycleShowroom.Models.BMW
+﻿@model MotorcycleShowroom.Models.BMW
 
 @{
     ViewData["Title"] = "Details";
@@ -6,24 +6,102 @@
 
 <h1>Details</h1>
 
-<div>
+<div class="overlay">
+    <div class="container content-container">
+        <div class="row">
+            <div class="col-md-6">
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Motorcycles)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Motorcycles)
+                    </dd>
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Info)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Info)
+                    </dd>
+                </dl>
+                <!-- White Back button -->
+                <a href="javascript:history.back()" class="btn btn-white btn-black-text btn-wider">Back</a>
+            </div>
+            <div class="col-md-6">
+                <!-- Image on the right side -->
+                <img src="~/img/bmws1000rr.jpg" alt="Motorcycle Image" class="motorcycle-image" />
+                <!-- Like button and counter below the image -->
+                <div class="like-container">
+                    <button id="likeButton" class="btn-like btn-white">Like</button>
+                    <div id="likeCount" class="like-count">
+                        <span class="heart-icon">&hearts;</span>
+                        <span id="countNumber" class="count-number">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Motorcycles)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Motorcycles)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Info)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Info)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<style>
+    .overlay {
+        background: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+    }
+
+    .content-container {
+        position: relative;
+        z-index: 1001; /* Place content container above the overlay */
+        padding-top: 56px; /* Adjust this value based on the height of your navbar */
+    }
+
+    .motorcycle-image {
+        width: 100%; /* Make the image take the full width of its container */
+        height: auto; /* Maintain the aspect ratio */
+        margin-top: 20px; /* Adjusted spacing above the image */
+    }
+
+    .like-container {
+        margin-top: 20px; /* Add some spacing above the like button */
+        color: white; /* Set the text color to white */
+    }
+
+    .btn-white {
+        color: black;
+        background-color: white;
+    }
+
+    .btn-black-text {
+        border: 1px solid black;
+    }
+
+    .btn-wider {
+        width: 120px; /* Adjusted width for the back button */
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var likeCount = 0;
+
+        $('#likeButton').click(function () {
+            $(this).toggleClass('btn-black');
+
+            if ($(this).hasClass('btn-black')) {
+                $(this).text('Liked');
+                likeCount++;
+            } else {
+                $(this).text('Like');
+                likeCount--;
+            }
+
+            $('#countNumber').text(likeCount);
+        });
+    });
+</script>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -171,5 +172,66 @@ namespace MotorcycleShowroom.Controllers
         {
           return (_context.BMW?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        public class LikeController : Controller
+        {
+            private readonly ApplicationDbContext _context;
+
+            public LikeController(ApplicationDbContext context)
+            {
+                _context = context;
+            }
+
+            
+            [HttpPost]
+            public IActionResult Like(int postId)
+            {
+            
+                var existingLike = _context.Likes.FirstOrDefault(l => l.PostId == postId);
+
+                if (existingLike != null)
+                {
+                    
+                    return Json(new { success = false, message = "You have already liked this post." });
+                }
+
+                
+                var newLike = new Like
+                {
+                    PostId = postId,
+                    
+                };
+
+                
+                _context.Likes.Add(newLike);
+                _context.SaveChanges();
+
+                
+                return Json(new { success = true, message = "Post liked successfully." });
+            }
+
+            
+            [HttpPost]
+            public IActionResult Unlike(int postId)
+            {
+                
+                var existingLike = _context.Likes.FirstOrDefault(l => l.PostId == postId /* && l.UserId == currentUserId if you have user authentication */);
+
+                if (existingLike == null)
+                {
+                    
+                    return Json(new { success = false, message = "Like not found." });
+                }
+
+                
+                _context.Likes.Remove(existingLike);
+                _context.SaveChanges();
+
+                
+                return Json(new { success = true, message = "Like removed successfully." });
+
+            }
+        }
+
     }
 }
