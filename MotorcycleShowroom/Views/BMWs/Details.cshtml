@@ -3,9 +3,6 @@
 @{
     ViewData["Title"] = "Details";
 }
-
-<h1>Details</h1>
-
 <div class="overlay">
     <div class="container content-container">
         <div class="row">
@@ -25,7 +22,7 @@
                     </dd>
                 </dl>
                 <!-- White Back button -->
-                <a href="javascript:history.back()" class="btn btn-white btn-black-text btn-wider">Back</a>
+                <a href="javascript:history.back()" class="btn btn-white btn-wider btn-hover">Back</a>
             </div>
             <div class="col-md-6">
                 <!-- Image on the right side -->
@@ -45,7 +42,7 @@
 
 <style>
     .overlay {
-        background: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+        background: rgba(0, 0, 0, 0.5);
         position: fixed;
         top: 0;
         left: 0;
@@ -56,32 +53,75 @@
 
     .content-container {
         position: relative;
-        z-index: 1001; /* Place content container above the overlay */
-        padding-top: 56px; /* Adjust this value based on the height of your navbar */
+        z-index: 1001;
+        padding-top: 56px;
     }
 
     .motorcycle-image {
-        width: 100%; /* Make the image take the full width of its container */
-        height: auto; /* Maintain the aspect ratio */
-        margin-top: 20px; /* Adjusted spacing above the image */
+        width: 100%;
+        height: auto;
+        margin-top: 20px;
     }
 
     .like-container {
-        margin-top: 20px; /* Add some spacing above the like button */
-        color: white; /* Set the text color to white */
+        margin-top: 20px;
+        color: white;
     }
 
     .btn-white {
         color: black;
         background-color: white;
-    }
-
-    .btn-black-text {
         border: 1px solid black;
     }
 
     .btn-wider {
-        width: 120px; /* Adjusted width for the back button */
+        width: 120px;
+    }
+
+    .btn-hover:hover {
+        color: white;
+        background-color: black;
+    }
+
+    .btn-like {
+        cursor: pointer;
+        padding: 8px 16px;
+        border: 1px solid black;
+        background-color: white;
+        color: black;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+        .btn-like.btn-black {
+            background-color: black;
+            color: white;
+        }
+
+            .btn-like.btn-black .heart-icon {
+                color: red;
+            }
+
+    .heart-icon {
+        font-size: 24px; /* Adjusted size for the heart in the counter */
+        margin-right: 5px;
+        color: white;
+        transition: color 0.3s, font-size 0.3s;
+    }
+
+    .like-count {
+        display: inline-block;
+        margin-left: 10px;
+        font-size: 18px;
+        color: white;
+    }
+
+    .count-number {
+        font-weight: bold;
+    }
+
+    .liked {
+        color: red !important;
+        font-size: 26px !important;
     }
 </style>
 
@@ -102,6 +142,16 @@
             }
 
             $('#countNumber').text(likeCount);
+
+            if (likeCount > 0) {
+                $('#likeCount .heart-icon').addClass('liked');
+            } else {
+                $('#likeCount .heart-icon').removeClass('liked');
+            }
         });
     });
 </script>
+
+
+
+

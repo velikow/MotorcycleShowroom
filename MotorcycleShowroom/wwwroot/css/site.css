@@ -44,17 +44,12 @@ a{
     color:white;
 }
 .input.form-control {
-    background-color: black;
     color: white;
     padding: 16px;
     font-size: 16px;
     border: none;
     cursor: pointer;
-    margin-left:50px;
-
-}
-input.form-control:hover, input.form-control:focus {
-    background-color: black;   
+    margin-left: 50px;
 }
 h4{
    font-family:fantasy;
@@ -198,7 +193,6 @@ input.form-login:hover, input.form-login:focus {
     label.control-label{
         color:white;
     }
-/* Add this to your site.css or in a <style> tag in your view */
 .btn-like {
     padding: 5px 10px;
     border: none;
