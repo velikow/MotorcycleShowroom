@@ -67,11 +67,26 @@ namespace MotorcycleShowroom.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Motorcycles,Info")] BMW bMW)
+        public async Task<IActionResult> Create([Bind("Id,Motorcycles,Info,Images")] BMW bMW, List<IFormFile> Images)
         {
             if (ModelState.IsValid)
             {
+                
                 _context.Add(bMW);
+                foreach (var file in Images)
+                {
+                    var filepath = Path.Combine("/Users\\moni_\\Source\\Repos\\MotorcycleShowroom\\MotorcycleShowroom\\wwwroot\\img\\/",  file.FileName);
+                    Console.WriteLine("FilePath=",filepath);
+                    if (file.Length >0 )
+                    {
+                        using (var stream = new FileStream(filepath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+                        
+                    }
+                }
+               
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

@@ -12,6 +12,7 @@ namespace MotorcycleShowroom.Data
         }
         public DbSet<MotorcycleShowroom.Models.BMW>? BMW { get; set; }
         public DbSet<Like> Likes { get; set; }  
+        public DbSet<ApplicationUser> User { get; set; }
 
     }
 }

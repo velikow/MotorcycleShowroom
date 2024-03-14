@@ -7,6 +7,8 @@
 
         public string Info { get; set; }
 
+        public ICollection<Image> Images { get; set; }
+
         public BMW() 
         {
             
