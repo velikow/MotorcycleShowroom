@@ -23,9 +23,22 @@ namespace MotorcycleShowroom.Controllers
         // GET: BMWs
         public async Task<IActionResult> Index()
         {
-            return _context.BMW != null ?
-                        View(await _context.BMW.ToListAsync()) :
-                        Problem("Entity set 'ApplicationDbContext.BMW'  is null.");
+            // Your raw SQL query
+            // string sqlQuery = @"
+            // SELECT DISTINCT b.*
+            // FROM BMW b
+            // LEFT JOIN Image i ON b.Id = i.BMWId
+            // "; 
+            
+            var bmwsWithImages = await _context.BMW
+    .Include(bmw => bmw.Images)
+    .ToListAsync();
+
+
+            // Execute the raw SQL query
+            //List<BMW> bmws = await _context.BMW.FromSqlRaw(sqlQuery).Include(bmw => bmw.Images).ToListAsync();
+
+            return View(bmwsWithImages);
         }
         // GET: BMWs/ShowSearchForm
         public IActionResult ShowSearchForm()
@@ -72,11 +85,19 @@ namespace MotorcycleShowroom.Controllers
             if (ModelState.IsValid)
             {
                 
-                _context.Add(bMW);
+                
+                
+                string DBPath = Directory.GetParent(Directory.GetParent(Path.GetDirectoryName(Environment.CurrentDirectory)).ToString()).ToString();
                 foreach (var file in Images)
+                   
                 {
-                    var filepath = Path.Combine("/Users\\moni_\\Source\\Repos\\MotorcycleShowroom\\MotorcycleShowroom\\wwwroot\\img\\/",  file.FileName);
+                    var filepath = Path.Combine(DBPath,  file.FileName);
                     Console.WriteLine("FilePath=",filepath);
+                    Image newImage = new Image();
+                    newImage.FileName = filepath;
+                    _context.Add(newImage);
+                    bMW.Images.Add(newImage);
+                   
                     if (file.Length >0 )
                     {
                         using (var stream = new FileStream(filepath, FileMode.Create))
@@ -85,8 +106,11 @@ namespace MotorcycleShowroom.Controllers
                         }
                         
                     }
+
                 }
-               
+                _context.Add(bMW);
+
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

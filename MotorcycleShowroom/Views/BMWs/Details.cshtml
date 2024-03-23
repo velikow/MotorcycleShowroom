@@ -1,32 +1,46 @@
 ﻿@model MotorcycleShowroom.Models.BMW
 
-@{
-    ViewData["Title"] = "Details";
-}
-<div class="overlay">
+
+                <div class="overlay">
     <div class="container content-container">
         <div class="row">
             <div class="col-md-6">
                 <dl class="row">
                     <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.Motorcycles)
+                        @Model.Motorcycles
                     </dt>
                     <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.Motorcycles)
+                        @Model.Motorcycles
                     </dd>
                     <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.Info)
+                        @Model.Info
                     </dt>
                     <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.Info)
+                        @Model.Info
                     </dd>
                 </dl>
                 <!-- White Back button -->
                 <a href="javascript:history.back()" class="btn btn-white btn-wider btn-hover">Back</a>
             </div>
             <div class="col-md-6">
-                <!-- Image on the right side -->
-                <img src="~/img/bmws1000rr.jpg" alt="Motorcycle Image" class="motorcycle-image" />
+                @if (@Model.Images != null && @Model.Images.Any())
+                {
+                    <h3>Images:</h3>
+                    <div>
+                        @foreach (var image in @Model.Images)
+                        {
+                            <img src="@image.FileName" alt="BMW Image" />
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>No images available for this BMW.</p>
+                }
+                
+
+
+                
                 <!-- Like button and counter below the image -->
                 <div class="like-container">
                     <button id="likeButton" class="btn-like btn-white">Like</button>
@@ -40,7 +54,8 @@
     </div>
 </div>
 
-<style>
+
+    <style>
     .overlay {
         background: rgba(0, 0, 0, 0.5);
         position: fixed;
@@ -127,6 +142,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
+    console.log(@Json.Serialize(Model));
     $(document).ready(function () {
         var likeCount = 0;
 
@@ -148,10 +164,9 @@
             } else {
                 $('#likeCount .heart-icon').removeClass('liked');
             }
+
         });
     });
 </script>
-
-
 
 

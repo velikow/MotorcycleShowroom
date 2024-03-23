@@ -16,6 +16,8 @@ namespace MotorcycleShowroom.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Motorcycles = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Info = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    
+
                 },
                 constraints: table =>
                 {
