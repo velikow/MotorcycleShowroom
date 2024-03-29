@@ -11,6 +11,8 @@ namespace MotorcycleShowroom.Models
 
             public int BMWId { get; set; }
             public BMW BMW { get; set; }
-        }
+
+        public ICollection<Image> Images { get; set; }
+    }
     }
 

@@ -11,7 +11,7 @@
 
         public BMW() 
         {
-            
+            ICollection<Image> Images = new List<Image>();
         }
 
 
