@@ -62,6 +62,7 @@ namespace MotorcycleShowroom.Controllers
         }
 
 
+
         // GET: BMWs/ShowSearchForm
         public IActionResult ShowSearchForm()
         {
@@ -112,7 +113,13 @@ namespace MotorcycleShowroom.Controllers
         public async Task<IActionResult> Create([Bind("Id,Motorcycles,Info,Images")] BMW bMW, List<IFormFile> Images)
         {
             if (ModelState.IsValid)
+
             {
+                if (Images == null || Images.Count == 0)
+                {
+                    ModelState.AddModelError(string.Empty, "Please upload at least one photo.");
+                    return View(bMW);
+                }
                 // Get the current directory of the application
                 string currentDirectory = Directory.GetCurrentDirectory();
 

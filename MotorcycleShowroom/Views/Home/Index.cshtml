@@ -65,16 +65,23 @@
     @foreach (var bmw in Model)
     {
         <div class="content object-container">
-    <div class="object-image">
-        <a href="@Url.Action("Details", "BMWs", new { id = bmw.Id })">
-            <img src="@Url.Action("GetImage", "Image", new { filePath = bmw.Images.FirstOrDefault().FileName })" alt="@bmw.Motorcycles" style="cursor:pointer;">
-        </a>
-    </div>
-    <div class="object-description">
-        <h2>@bmw.Motorcycles</h2>
-        <p>@bmw.Info</p> <!-- Add the motorcycle description here -->
-    </div>
-</div>
+            <div class="object-image">
+                <a href="@Url.Action("Details", "BMWs", new { id = bmw.Id })">
+                    @if (bmw.Images != null && bmw.Images.Any())
+                    {
+                        <img src="@Url.Action("GetImage", "Image", new { filePath = bmw.Images.FirstOrDefault()?.FileName })" alt="@bmw.Motorcycles" style="cursor:pointer;">
+                    }
+                    else
+                    {
+                        <p>No image available</p>
+                    }
+                </a>
+            </div>
+            <div class="object-description">
+                <h2>@bmw.Motorcycles</h2>
+                <p>@bmw.Info</p> <!-- Add the motorcycle description here -->
+            </div>
+        </div>
     }
 }
 else
