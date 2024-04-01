@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using MotorcycleShowroom.Data;
 using MotorcycleShowroom.Models;
 using System.Text.Json;
+using System.IO;
+
 
 
 
@@ -23,32 +25,43 @@ namespace MotorcycleShowroom.Controllers
         private readonly ILogger<BMWsController> _logger;
         private readonly ApplicationDbContext _context;
 
-        public BMWsController(ApplicationDbContext context, ILogger<BMWsController> logger)
+        public BMWsController(ApplicationDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
+
         // GET: BMWs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            // Your raw SQL query
-            // string sqlQuery = @"
-            // SELECT DISTINCT b.*
-            // FROM BMW b
-            // LEFT JOIN Image i ON b.Id = i.BMWId
-            // "; 
-            
+            // Calculate the number of items to skip
+            var skipAmount = (page - 1) * pageSize;
+
+            // Retrieve a subset of BMWs with pagination
             var bmwsWithImages = await _context.BMW
-    
-    .ToListAsync();
-            
+                .Skip(skipAmount)
+                .Take(pageSize)
+                .ToListAsync();
 
+            // Get total count of BMWs
+            var totalCount = await _context.BMW.CountAsync();
 
-            // Execute the raw SQL query
-            //List<BMW> bmws = await _context.BMW.FromSqlRaw(sqlQuery).Include(bmw => bmw.Images).ToListAsync();
+            // Calculate total number of pages
+            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 
-            return View(bmwsWithImages);
+            // Pass the subset of BMWs and pagination data to the view
+            var Model = new BMWPaginationModel
+            {
+                BMWs = bmwsWithImages,
+                CurrentPage = page,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = totalPages
+            };
+
+            return View(Model);
         }
+
+
         // GET: BMWs/ShowSearchForm
         public IActionResult ShowSearchForm()
         {
@@ -133,7 +146,7 @@ namespace MotorcycleShowroom.Controllers
 
                         // Combine the images directory with the unique file name
                         string filePath = Path.Combine(imagesDirectory, uniqueFileName);
-                        _logger.LogInformation("Received filePath", filePath);
+                        //_logger.LogInformation("Received filePath", filePath);
 
                         // Save the file to the specified path
                         using (var stream = new FileStream(filePath, FileMode.Create))
@@ -144,7 +157,7 @@ namespace MotorcycleShowroom.Controllers
                         // Create a new Image object and set its FileName property to the relative image path
                         Image newImage = new Image { FileName = filePath, BMWId = bmwinstance.Id };
 
-                        _logger.LogInformation("Received Image model: {Model}", JsonSerializer.Serialize(newImage));
+                        //_logger.LogInformation("Received Image model: {Model}", JsonSerializer.Serialize(newImage));
 
                         await _context.Image.AddAsync(newImage);
 

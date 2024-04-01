@@ -1,15 +1,84 @@
-﻿@{
+﻿@model IEnumerable<MotorcycleShowroom.Models.BMW>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="fw-bold text-end">
+<style>
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+        z-index: 1;
+    }
 
+    .content {
+        position: relative;
+        z-index: 2;
+        padding: 20px;
+        color: white; /* Adjust text color */
+    }
 
+    header {
+        position: relative;
+        z-index: 3; /* Ensure header is above overlay */
+    }
+
+    .object-container {
+        display: flex; /* Use flexbox */
+        background-color: rgba(128, 128, 128, 0.5); /* Adjust greyish background color and opacity here */
+        padding: 20px;
+        margin-top: 20px; /* Adjust margin as needed */
+        border-radius: 10px; /* Add border radius for rounded corners */
+    }
+
+    .object-image {
+        flex: 0 0 auto; /* Prevent image from growing */
+        margin-right: 20px; /* Add space between image and description */
+    }
+
+    .object-description {
+        flex: 1; /* Allow description to grow */
+    }
+
+    .object-image img {
+        cursor: pointer; /* Change cursor to pointer */
+    }
+</style>
+
+<div class="overlay"></div>
+
+<header>
+    <!-- Your header content goes here -->
+</header>
+
+<div class="content fw-bold text-end">
     <h1 class="display-4">Velikow's Moto Showroom</h1>
-    
-    <p>On This Website, You Can See The Specs Of Different Two Wheel Machines</a>.</p>
+    <p>On This Website, You Can See The Specs Of Different Two Wheel Machines</p>
 </div>
 
-
-
-
+@if (Model != null && Model.Any())
+{
+    @foreach (var bmw in Model)
+    {
+        <div class="content object-container">
+            <div class="object-image">
+                <a href="@Url.Action("Details", "BMWs", new { id = bmw.Id })">
+                    <img src="@Url.Action("GetImage", "Image", new { filePath = bmw.Images.FirstOrDefault().FileName })" alt="@bmw.Motorcycles" style="cursor:pointer;">
+                </a>
+            </div>
+            <div class="object-description">
+                <h2>@bmw.Motorcycles</h2>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="content">
+        <p>No BMW objects found.</p>
+    </div>
+}

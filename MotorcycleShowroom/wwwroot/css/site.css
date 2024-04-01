@@ -209,7 +209,9 @@ input.form-login:hover, input.form-login:focus {
     background-color: black;
     color: white;
 }
-
+.pagination .page-link {
+    color: black;
+}
 
 
 

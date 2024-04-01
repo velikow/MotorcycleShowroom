@@ -13,7 +13,10 @@ namespace MotorcycleShowroom.Models
 
             public BMW BMW { get; set; }
 
-        
+        internal static IDisposable Load(Stream stream)
+        {
+            throw new NotImplementedException();
+        }
     }
     }
 
