@@ -68,13 +68,26 @@ namespace MotorcycleShowroom.Controllers
         {
             return View();
         }
-        
+
 
         // Post: BMWs/ShowSearchResults
-#pragma warning disable CS8604 // Possible null reference argument.
-        public async Task<IActionResult> ShowSearchResults(String SearchPhrase) => View("Index", await _context.BMW.Where(j => j.Motorcycles.Contains(SearchPhrase)).ToListAsync());
-#pragma warning restore CS8604 // Possible null reference argument.
+        public async Task<IActionResult> ShowSearchResults(string searchPhrase)
+        {
+            // Filter BMWs based on the search phrase
+            var filteredBMWs = await _context.BMW
+                                        .Where(j => j.Motorcycles.Contains(searchPhrase))
+                                        .ToListAsync();
 
+            // Populate the pagination model
+            var paginationModel = new BMWPaginationModel
+            {
+                BMWs = filteredBMWs,
+                // Set other properties of the pagination model if needed
+            };
+
+            // Pass the pagination model to the Index view
+            return View("Index", paginationModel);
+        }
         // GET: BMWs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
