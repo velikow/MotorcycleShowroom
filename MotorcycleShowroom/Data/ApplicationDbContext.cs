@@ -6,6 +6,8 @@ namespace MotorcycleShowroom.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
+        internal static IEnumerable<object> Images;
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -17,11 +19,10 @@ namespace MotorcycleShowroom.Data
             protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Image>()
-                .HasOne(i => i.BMW)             // Image has one BMW
-                .WithMany(b => b.Images)         // BMW has many Images
-                .HasForeignKey(i => i.BMWId);   // Foreign key in Image entity
-
+                modelBuilder.Entity<Image>()
+                .HasOne(image => image.BMW)          // Image has one BMW
+                .WithMany(bmw => bmw.Images)         // BMW has many Images
+                .HasForeignKey(image => image.BMWId); // Use BMWId as the foreign ke
             // Additional configuration if needed
         }
 

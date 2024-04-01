@@ -1,4 +1,5 @@
-﻿@model MotorcycleShowroom.Models.BMW
+﻿@inject ILogger<MotorcycleShowroom.Models.BMW> Logger
+@model MotorcycleShowroom.Models.BMW
 
 
                 <div class="overlay">
@@ -17,13 +18,15 @@
                 <a href="javascript:history.back()" class="btn btn-white btn-wider btn-hover">Back</a>
             </div>
             <div class="col-md-6">
+
                 @if (@Model.Images != null && @Model.Images.Any())
                 {
                     <h3>Images:</h3>
                     <div>
                         @foreach (var image in @Model.Images)
                         {
-                            <img src="@image.FileName" alt="BMW Image" />
+                            <img src="@Url.Action("GetImage", "Image", new { filePath = @image.FileName })" alt="Description of the image">
+                          //  <img src="@image.FileName" alt="BMW Image" />
                         }
                     </div>
                 }
@@ -31,6 +34,7 @@
                 {
                     <p>No images available for this BMW.</p>
                 }
+
                 
 
 
@@ -136,7 +140,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    console.log(@Json.Serialize(Model));
+    
     $(document).ready(function () {
         var likeCount = 0;
 

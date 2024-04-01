@@ -7,18 +7,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MotorcycleShowroom.Data;
 using MotorcycleShowroom.Models;
+using System.Text.Json;
+
+
 
 namespace MotorcycleShowroom.Controllers
 {
+  
     public class BMWsController : Controller
+
     {
+        private readonly ILogger<BMWsController> _logger;
         private readonly ApplicationDbContext _context;
 
-        public BMWsController(ApplicationDbContext context)
+        public BMWsController(ApplicationDbContext context, ILogger<BMWsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
         // GET: BMWs
         public async Task<IActionResult> Index()
@@ -31,8 +39,9 @@ namespace MotorcycleShowroom.Controllers
             // "; 
             
             var bmwsWithImages = await _context.BMW
-    .Include(bmw => bmw.Images)
+    
     .ToListAsync();
+            
 
 
             // Execute the raw SQL query
@@ -45,6 +54,7 @@ namespace MotorcycleShowroom.Controllers
         {
             return View();
         }
+        
 
         // Post: BMWs/ShowSearchResults
 #pragma warning disable CS8604 // Possible null reference argument.
@@ -54,20 +64,26 @@ namespace MotorcycleShowroom.Controllers
         // GET: BMWs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.BMW == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var bMW = await _context.BMW
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (bMW == null)
+            var bmw = await _context.BMW
+                .Include(j => j.Images)
+                                    
+                                    .FirstOrDefaultAsync(m => m.Id == id);
+            
+           // _logger.LogInformation("Received model: {Model}", JsonSerializer.Serialize(bmw));
+
+            if (bmw == null)
             {
                 return NotFound();
             }
 
-            return View(bMW);
+            return View(bmw);
         }
+
 
         // GET: BMWs/Create
         [Authorize]
@@ -84,38 +100,71 @@ namespace MotorcycleShowroom.Controllers
         {
             if (ModelState.IsValid)
             {
-                
-                
-                
-                string DBPath = Directory.GetParent(Directory.GetParent(Path.GetDirectoryName(Environment.CurrentDirectory)).ToString()).ToString();
-                foreach (var file in Images)
-                   
+                // Get the current directory of the application
+                string currentDirectory = Directory.GetCurrentDirectory();
+
+                // Specify the relative path to the images directory
+                string imagesDirectory = "C:/Users/moni_/source/repos/MotorcycleShowroom/MotorcycleShowroom/wwwroot/img/";
+
+                // Create the images directory if it doesn't exist
+                if (!Directory.Exists(imagesDirectory))
                 {
-                    var filepath = Path.Combine(DBPath,  file.FileName);
-                    Console.WriteLine("FilePath=",filepath);
-                    Image newImage = new Image();
-                    newImage.FileName = filepath;
-                    _context.Add(newImage);
-                    bMW.Images.Add(newImage);
-                   
-                    if (file.Length >0 )
-                    {
-                        using (var stream = new FileStream(filepath, FileMode.Create))
+                    Directory.CreateDirectory(imagesDirectory);
+                }
+                // Add the BMW object to the context and save changes
+                 var bmwinstance = new BMW 
+                {
+                   Motorcycles= bMW.Motorcycles,
+                    Info= bMW.Info
+                    
+               };
+                
+                var bmw = await _context.BMW.AddAsync(bmwinstance);
+                await _context.SaveChangesAsync();
+
+
+
+
+                foreach (var file in Images)
+                {
+{
+                        // Generate a unique file name for the image
+                        string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+
+                        // Combine the images directory with the unique file name
+                        string filePath = Path.Combine(imagesDirectory, uniqueFileName);
+                        _logger.LogInformation("Received filePath", filePath);
+
+                        // Save the file to the specified path
+                        using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await file.CopyToAsync(stream);
                         }
                         
+                        // Create a new Image object and set its FileName property to the relative image path
+                        Image newImage = new Image { FileName = filePath, BMWId = bmwinstance.Id };
+
+                        _logger.LogInformation("Received Image model: {Model}", JsonSerializer.Serialize(newImage));
+
+                        await _context.Image.AddAsync(newImage);
+
+
+                       
+                        
                     }
-
                 }
-                _context.Add(bMW);
-
 
                 await _context.SaveChangesAsync();
+
+
+                // Redirect to the Index action method after successfully creating the BMW object
                 return RedirectToAction(nameof(Index));
             }
+
+            // If the ModelState is not valid, return the view with the provided BMW object
             return View(bMW);
         }
+
 
         // GET: BMWs/Edit/5
         [Authorize]
