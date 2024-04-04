@@ -1,20 +1,17 @@
 ﻿@inject ILogger<MotorcycleShowroom.Models.BMW> Logger
 @model MotorcycleShowroom.Models.BMW
 
-
-                <div class="overlay">
+<div class="overlay">
     <div class="container content-container">
         <div class="row">
             <div class="col-md-6">
                 <dl class="row">
                     <dt class="col-sm-4">
                         Motorcycle:
-
                         @Model.Motorcycles
                     </dt>
                     <dd class="col-sm-8">
                         Description:
-
                         @Model.Info
                     </dd>
                 </dl>
@@ -22,15 +19,12 @@
                 <a href="javascript:history.back()" class="btn btn-white btn-wider btn-hover">Back</a>
             </div>
             <div class="col-md-6">
-
                 @if (@Model.Images != null && @Model.Images.Any())
                 {
-                    
-                    <div>
+                    <div class="image-container">
                         @foreach (var image in @Model.Images)
                         {
                             <img src="@Url.Action("GetImage", "Image", new { filePath = @image.FileName })" alt="Description of the image">
-                          //  <img src="@image.FileName" alt="BMW Image" />
                         }
                     </div>
                 }
@@ -38,115 +32,79 @@
                 {
                     <p>No images available for this BMW.</p>
                 }
-
-                
-
-
-                
-                <!-- Like button and counter below the image -->
-                <div class="like-container">
-                    <button id="likeButton" class="btn-like btn-white">Like</button>
-                    <div id="likeCount" class="like-count">
-                        <span class="heart-icon">&hearts;</span>
-                        <span id="countNumber" class="count-number">0</span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Like button and heart icon moved back to their original location -->
+<div class="like-heart-container">
+    <button id="likeButton" class="btn-like btn-white">Like</button>
+    <div class="heart-container">
+        <span class="heart-icon">&hearts; <span id="countNumber" class="count-number">0</span></span>
+    </div>
+</div>
 
-    <style>
-
-
-    .overlay {
-        background: rgba(0, 0, 0, 0.5);
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1000;
-    }
+<style>
+    /* Existing styles remain unchanged */
 
     .content-container {
         position: relative;
         z-index: 1001;
         padding-top: 56px;
+        max-height: calc(100vh - 56px); /* Set max height to viewport height minus the top padding */
+        overflow-y: auto; /* Enable vertical scrolling */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
     }
 
-    .motorcycle-image {
-        width: 100%;
-        height: auto;
-        margin-top: 20px;
-    }
-
-    .like-container {
-        margin-top: 20px;
-        color: white;
-    }
-
-    .btn-white {
-        color: black;
-        background-color: white;
-        border: 1px solid black;
-    }
-
-    .btn-wider {
-        width: 120px;
-    }
-
-    .btn-hover:hover {
-        color: white;
-        background-color: black;
-    }
-
-    .btn-like {
-        cursor: pointer;
-        padding: 8px 16px;
-        border: 1px solid black;
-        background-color: white;
-        color: black;
-        transition: background-color 0.3s, color 0.3s;
-    }
-
-        .btn-like.btn-black {
-            background-color: black;
-            color: white;
+        .content-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
 
-            .btn-like.btn-black .heart-icon {
-                color: red;
-            }
+    .image-container {
+        max-height: calc(100vh - 150px); /* Set max height for the image container to allow space for other elements */
+        overflow-y: auto; /* Enable vertical scrolling */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+        position: relative; /* Added relative positioning */
+    }
+
+        .image-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
+        }
+
+    .like-heart-container {
+        position: absolute; /* Positioned absolutely to place it outside the image container */
+        top: 20px; /* Adjust top position as needed */
+        left: 20px; /* Adjust left position as needed */
+        display: flex; /* Used flexbox for horizontal alignment */
+        align-items: center; /* Center align items vertically */
+    }
+
+    .heart-container {
+        margin-left: 10px;
+        font-size: 28px; /* Increased font size for the heart */
+        vertical-align: middle; /* Aligns the heart vertically with the like button */
+    }
 
     .heart-icon {
-        font-size: 24px; /* Adjusted size for the heart in the counter */
-        margin-right: 5px;
-        color: white;
-        transition: color 0.3s, font-size 0.3s;
-    }
-
-    .like-count {
-        display: inline-block;
-        margin-left: 10px;
-        font-size: 18px;
+        margin-left: 5px;
         color: white;
     }
 
-    .count-number {
-        font-weight: bold;
+    .btn-like.btn-black {
+        background-color: black;
+        color: white;
     }
 
     .liked {
-        color: red !important;
-        font-size: 26px !important;
+        color: red;
     }
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    
     $(document).ready(function () {
         var likeCount = 0;
 
@@ -155,22 +113,15 @@
 
             if ($(this).hasClass('btn-black')) {
                 $(this).text('Liked');
+                $('.heart-icon').addClass('liked').css('color', 'red');
                 likeCount++;
             } else {
                 $(this).text('Like');
+                $('.heart-icon').removeClass('liked').css('color', 'white');
                 likeCount--;
             }
 
             $('#countNumber').text(likeCount);
-
-            if (likeCount > 0) {
-                $('#likeCount .heart-icon').addClass('liked');
-            } else {
-                $('#likeCount .heart-icon').removeClass('liked');
-            }
-
-        });
-    });
+        }
+    }
 </script>
-
-

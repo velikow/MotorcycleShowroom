@@ -23,7 +23,10 @@ namespace MotorcycleShowroom.Controllers
 
     {
         private readonly ILogger<BMWsController> _logger;
-        private readonly ApplicationDbContext _context;
+
+        private readonly IWebHostEnvironment _hostingEnvironment;
+
+        public ApplicationDbContext _context;
 
         public BMWsController(ApplicationDbContext context)
         {
@@ -137,7 +140,7 @@ namespace MotorcycleShowroom.Controllers
                 string currentDirectory = Directory.GetCurrentDirectory();
 
                 // Specify the relative path to the images directory
-                string imagesDirectory = "C:/Users/moni_/source/repos/MotorcycleShowroom/MotorcycleShowroom/wwwroot/img/";
+                string imagesDirectory = "C:/Users/pc1-19/Source/Repos/MotorcycleShowroom/MotorcycleShowroom/wwwroot/img/";
 
                 // Create the images directory if it doesn't exist
                 if (!Directory.Exists(imagesDirectory))
@@ -203,26 +206,33 @@ namespace MotorcycleShowroom.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.BMW == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var bMW = await _context.BMW.FindAsync(id);
-            if (bMW == null)
+            var bmw = await _context.BMW.Include(b => b.Images).FirstOrDefaultAsync(b => b.Id == id);
+
+            if (bmw == null)
             {
                 return NotFound();
             }
-            return View(bMW);
+
+            return View(bmw);
+        }
+
+        public ApplicationDbContext Get_context()
+        {
+            return _context;
         }
 
         // POST: BMWs/Edit/5
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Motorcycles,Info")] BMW bMW)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Motorcycles,Info")] BMW bmw, int? existingImages, IFormFile newImage, List<int> removeImages)
         {
-            if (id != bMW.Id)
+            if (id != bmw.Id)
             {
                 return NotFound();
             }
@@ -231,12 +241,55 @@ namespace MotorcycleShowroom.Controllers
             {
                 try
                 {
-                    _context.Update(bMW);
+                    var existingBMW = await _context.BMW.Include(b => b.Images).FirstOrDefaultAsync(b => b.Id == id);
+
+                    if (existingBMW == null)
+                    {
+                        return NotFound();
+                    }
+
+                    if (existingImages.HasValue && existingImages.Value != 0)
+                    {
+                        var imageToAdd = await _context.Image.FirstOrDefaultAsync(i => i.Id == existingImages.Value);
+                        if (imageToAdd != null && !existingBMW.Images.Contains(imageToAdd))
+                        {
+                            existingBMW.Images.Add(imageToAdd);
+                        }
+                    }
+
+                    if (newImage != null && newImage.Length > 0)
+                    {
+                        var FileName = Guid.NewGuid().ToString() + Path.GetExtension(newImage.FileName);
+                        var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "uploads", FileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await newImage.CopyToAsync(stream);
+                        }
+
+                        var newImageToAdd = new Image { FileName = FileName };
+                        existingBMW.Images.Add(newImageToAdd);
+                    }
+
+                    if (removeImages != null && removeImages.Any())
+                    {
+                        foreach (var imageId in removeImages)
+                        {
+                            var imageToRemove = existingBMW.Images.FirstOrDefault(i => i.Id == imageId);
+                            if (imageToRemove != null)
+                            {
+                                existingBMW.Images.Remove(imageToRemove);
+                                _context.Image.Remove(imageToRemove);  // Remove the image from the database
+                            }
+                        }
+                    }
+
+                    _context.Update(existingBMW);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BMWExists(bMW.Id))
+                    if (!BMWExists(bmw.Id))
                     {
                         return NotFound();
                     }
@@ -247,8 +300,15 @@ namespace MotorcycleShowroom.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(bMW);
+            return View(bmw);
         }
+
+
+
+
+
+
+
 
         // GET: BMWs/Delete/5
         [Authorize]
