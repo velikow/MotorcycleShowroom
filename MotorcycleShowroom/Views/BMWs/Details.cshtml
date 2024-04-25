@@ -19,19 +19,32 @@
                 <a href="javascript:history.back()" class="btn btn-white btn-wider btn-hover">Back</a>
             </div>
             <div class="col-md-6">
-                @if (@Model.Images != null && @Model.Images.Any())
-                {
-                    <div class="image-container">
-                        @foreach (var image in @Model.Images)
-                        {
-                            <img src="@Url.Action("GetImage", "Image", new { filePath = @image.FileName })" alt="Description of the image">
-                        }
-                    </div>
-                }
-                else
-                {
-                    <p>No images available for this BMW.</p>
-                }
+
+                <div class="slideshow-container">
+
+                    <!-- Full-width images with number and caption text -->
+                    @foreach (var image in @Model.Images)
+                    {
+                        <div class="mySlides">
+                            
+                            <img src="@Url.Action("GetImage", "Image", new { filePath = @image.FileName })" alt="Description of the image" style="width:100%">
+                            
+                        </div>
+                    }
+
+
+                    <!-- Next and previous buttons -->
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                </div>
+                <br>
+
+                <!-- The dots/circles -->
+                <div style="text-align:center">
+                    <span class="dot" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                    <span class="dot" onclick="currentSlide(3)"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -101,27 +114,57 @@
     .liked {
         color: red;
     }
+
 </style>
 
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    $(document).ready(function () {
-        var likeCount = 0;
+    /* $(document).ready(function () {
+         var likeCount = 0;
 
-        $('#likeButton').click(function () {
-            $(this).toggleClass('btn-black');
+         $('#likeButton').click(function () {
+             $(this).toggleClass('btn-black');
 
-            if ($(this).hasClass('btn-black')) {
-                $(this).text('Liked');
-                $('.heart-icon').addClass('liked').css('color', 'red');
-                likeCount++;
-            } else {
-                $(this).text('Like');
-                $('.heart-icon').removeClass('liked').css('color', 'white');
-                likeCount--;
-            }
+             if ($(this).hasClass('btn-black')) {
+                 $(this).text('Liked');
+                 $('.heart-icon').addClass('liked').css('color', 'red');
+                 likeCount++;
+             } else {
+                 $(this).text('Like');
+                 $('.heart-icon').removeClass('liked').css('color', 'white');
+                 likeCount--;
+             }
 
-            $('#countNumber').text(likeCount);
+             $('#countNumber').text(likeCount);
+         }
+         }*/
+    let slideIndex = 0;
+    showSlides(slideIndex);
+
+    // Next/previous controls
+    function plusSlides(n) {
+        console.log("N=%s", n)
+        showSlides(slideIndex += n);
+    }
+
+    // Thumbnail image controls
+    function currentSlide(n) {
+        showSlides(slideIndex = n);
+    }
+
+    function showSlides(n) {
+        let i;
+        let slides = document.getElementsByClassName("mySlides");
+        let dots = document.getElementsByClassName("dot");
+        if (n > slides.length) { slideIndex = 1 }
+        if (n < 1) { slideIndex = slides.length }
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
         }
+        for (i = 0; i < dots.length; i++) {
+            dots[i].className = dots[i].className.replace(" active", "");
+        }
+        slides[slideIndex - 1].style.display = "block";
+        dots[slideIndex - 1].className += " active";
     }
 </script>

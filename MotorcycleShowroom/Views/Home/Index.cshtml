@@ -49,17 +49,40 @@
     }
 </style>
 
+
+
 <div class="overlay"></div>
 
 <header>
     <!-- Your header content goes here -->
 </header>
+<div class="upper-section-container">
+    <div class="bmw-search-container">
 
-<div class="content fw-bold text-end">
-    <h1 class="display-4">Velikow's Moto Showroom</h1>
-    <p>On This Website, You Can See The Specs Of Different Two Wheel Machines</p>
+        <h4 class="text-white">Search for a motorcycle</h4>
+        <hr />
+        <div class="row">
+            <div class="Search">
+                <form asp-action="ShowSearchResults">
+                    <div class="form-group">
+                        <label for="SearchPhrase" class="control-label"></label>
+                        <input name="SearchPhrase" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Search" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="content fw-bold text-end">
+        <h1 class="display-4">Velikow's Moto Showroom</h1>
+        <p>On This Website, You Can See The Specs Of Different Two Wheel Machines</p>
+    </div>
 </div>
-
 @if (Model != null && Model.Any())
 {
     @foreach (var bmw in Model)

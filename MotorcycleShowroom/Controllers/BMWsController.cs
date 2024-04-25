@@ -140,7 +140,7 @@ namespace MotorcycleShowroom.Controllers
                 string currentDirectory = Directory.GetCurrentDirectory();
 
                 // Specify the relative path to the images directory
-                string imagesDirectory = "C:/Users/pc1-19/Source/Repos/MotorcycleShowroom/MotorcycleShowroom/wwwroot/img/";
+                string imagesDirectory = Directory.GetCurrentDirectory().Replace(Path.DirectorySeparatorChar, '/');
 
                 // Create the images directory if it doesn't exist
                 if (!Directory.Exists(imagesDirectory))
