@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<MotorcycleShowroom.Models.BMW>
 
+
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -63,15 +64,16 @@
         <hr />
         <div class="row">
             <div class="Search">
-                <form asp-action="ShowSearchResults">
+                <form asp-controller="Home" asp-action="" method="get">
                     <div class="form-group">
                         <label for="SearchPhrase" class="control-label"></label>
-                        <input name="SearchPhrase" class="form-control" />
+                        <input name="searchPhrase" class="form-control" />
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Search" class="btn btn-primary" />
                     </div>
                 </form>
+
             </div>
         </div>
 
@@ -104,6 +106,7 @@
                 <h2>@bmw.Motorcycles</h2>
                 <p>@bmw.Info</p> <!-- Add the motorcycle description here -->
             </div>
+
         </div>
     }
 }

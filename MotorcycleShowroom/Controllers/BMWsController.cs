@@ -12,13 +12,12 @@ using MotorcycleShowroom.Data;
 using MotorcycleShowroom.Models;
 using System.Text.Json;
 using System.IO;
-
-
-
+using Microsoft.AspNetCore.Identity;
+using Humanizer;
 
 namespace MotorcycleShowroom.Controllers
 {
-  
+
     public class BMWsController : Controller
 
     {
@@ -28,40 +27,59 @@ namespace MotorcycleShowroom.Controllers
 
         public ApplicationDbContext _context;
 
-        public BMWsController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public BMWsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _context = context;
         }
 
         // GET: BMWs
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
-            // Calculate the number of items to skip
-            var skipAmount = (page - 1) * pageSize;
-
-            // Retrieve a subset of BMWs with pagination
-            var bmwsWithImages = await _context.BMW
-                .Skip(skipAmount)
-                .Take(pageSize)
-                .ToListAsync();
-
-            // Get total count of BMWs
-            var totalCount = await _context.BMW.CountAsync();
-
-            // Calculate total number of pages
-            var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-
-            // Pass the subset of BMWs and pagination data to the view
-            var Model = new BMWPaginationModel
+            // Get the current user
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null)
             {
-                BMWs = bmwsWithImages,
-                CurrentPage = page,
-                PageSize = pageSize,
-                TotalCount = totalCount,
-                TotalPages = totalPages
-            };
 
-            return View(Model);
+                var loginUrl = "/Identity/Account/Login";
+
+                // Redirect to the login page
+                return Redirect(loginUrl);
+            }
+            else
+            {
+                // Calculate the number of items to skip//
+                var skipAmount = (page - 1) * pageSize;
+
+                // Retrieve a subset of BMWs with pagination
+                var bmwsWithImages = await _context.BMW
+                    .Where(bmw => bmw.UserId == currentUser.Id)
+                    .Skip(skipAmount)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                // Get total count of BMWs
+
+                var totalCount = await _context.BMW.Where(bmw => bmw.UserId == currentUser.Id).CountAsync();
+
+                // Calculate total number of pages
+                var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+
+                // Pass the subset of BMWs and pagination data to the view
+                var Model = new BMWPaginationModel
+                {
+                    BMWs = bmwsWithImages,
+                    CurrentPage = page,
+                    PageSize = pageSize,
+                    TotalCount = totalCount,
+                    TotalPages = totalPages
+                };
+
+                return View(Model);
+            }
+
+
         }
 
 
@@ -76,10 +94,12 @@ namespace MotorcycleShowroom.Controllers
         // Post: BMWs/ShowSearchResults
         public async Task<IActionResult> ShowSearchResults(string searchPhrase)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
             // Filter BMWs based on the search phrase
             var filteredBMWs = await _context.BMW
-                                        .Where(j => j.Motorcycles.Contains(searchPhrase))
-                                        .ToListAsync();
+                 .Where(bmw => bmw.UserId == currentUser.Id)
+                 .Where(j => j.Motorcycles.Contains(searchPhrase))
+                 .ToListAsync();
 
             // Populate the pagination model
             var paginationModel = new BMWPaginationModel
@@ -101,17 +121,29 @@ namespace MotorcycleShowroom.Controllers
 
             var bmw = await _context.BMW
                 .Include(j => j.Images)
-                                    
-                                    .FirstOrDefaultAsync(m => m.Id == id);
-            
-           // _logger.LogInformation("Received model: {Model}", JsonSerializer.Serialize(bmw));
+
+                .FirstOrDefaultAsync(m => m.Id == id);
+            var likesCount = await _context.Likes.Where(like => like.BMWId == bmw.Id).CountAsync();
+
+
+
+
+
+            // _logger.LogInformation("Received model: {Model}", JsonSerializer.Serialize(bmw));
 
             if (bmw == null)
             {
                 return NotFound();
             }
+            var viewModel = new BMWDetailsViewModel
+            {
+                Bmw = bmw,
+                LikesCount = likesCount
+            };
 
-            return View(bmw);
+            return View(viewModel);
+
+            
         }
 
 
@@ -126,11 +158,13 @@ namespace MotorcycleShowroom.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Motorcycles,Info,Images")] BMW bMW, List<IFormFile> Images)
+        public async Task<IActionResult> Create([Bind("Motorcycles,Info,Images")] BMW bMW, List<IFormFile> Images)
         {
             if (ModelState.IsValid)
 
             {
+                var currentUser = await _userManager.GetUserAsync(User);
+
                 if (Images == null || Images.Count == 0)
                 {
                     ModelState.AddModelError(string.Empty, "Please upload at least one photo.");
@@ -148,13 +182,15 @@ namespace MotorcycleShowroom.Controllers
                     Directory.CreateDirectory(imagesDirectory);
                 }
                 // Add the BMW object to the context and save changes
-                 var bmwinstance = new BMW 
+
+                var bmwinstance = new BMW
                 {
-                   Motorcycles= bMW.Motorcycles,
-                    Info= bMW.Info
-                    
-               };
-                
+                    UserId = currentUser.Id,
+                    Motorcycles = bMW.Motorcycles,
+                    Info = bMW.Info
+
+                };
+
                 var bmw = await _context.BMW.AddAsync(bmwinstance);
                 await _context.SaveChangesAsync();
 
@@ -163,7 +199,7 @@ namespace MotorcycleShowroom.Controllers
 
                 foreach (var file in Images)
                 {
-{
+                    {
                         // Generate a unique file name for the image
                         string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
 
@@ -176,7 +212,7 @@ namespace MotorcycleShowroom.Controllers
                         {
                             await file.CopyToAsync(stream);
                         }
-                        
+
                         // Create a new Image object and set its FileName property to the relative image path
                         Image newImage = new Image { FileName = filePath, BMWId = bmwinstance.Id };
 
@@ -185,8 +221,8 @@ namespace MotorcycleShowroom.Controllers
                         await _context.Image.AddAsync(newImage);
 
 
-                       
-                        
+
+
                     }
                 }
 
@@ -344,74 +380,73 @@ namespace MotorcycleShowroom.Controllers
             {
                 _context.BMW.Remove(bMW);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BMWExists(int id)
         {
-          return (_context.BMW?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.BMW?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public class LikeController : Controller
+        [HttpPost]
+        public async Task<IActionResult> Like(int BMWId)
         {
-            private readonly ApplicationDbContext _context;
 
-            public LikeController(ApplicationDbContext context)
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var existingLike = _context.Likes
+                .Where(like => like.UserId == currentUser.Id)
+                .FirstOrDefault(l => l.BMWId == BMWId);
+
+            if (existingLike != null)
             {
-                _context = context;
+
+                return Json(new { success = false, message = "You have already liked this post." });
             }
 
-            
-            [HttpPost]
-            public IActionResult Like(int postId)
+
+            var newLike = new Like
             {
-            
-                var existingLike = _context.Likes.FirstOrDefault(l => l.PostId == postId);
+                BMWId = BMWId,
+                UserId = currentUser.Id
 
-                if (existingLike != null)
-                {
-                    
-                    return Json(new { success = false, message = "You have already liked this post." });
-                }
+            };
 
-                
-                var newLike = new Like
-                {
-                    PostId = postId,
-                    
-                };
 
-                
-                _context.Likes.Add(newLike);
-                _context.SaveChanges();
+            _context.Likes.Add(newLike);
+            _context.SaveChanges();
 
-                
-                return Json(new { success = true, message = "Post liked successfully." });
+
+            var updatedLikeCount = await _context.Likes.CountAsync(like => like.BMWId == BMWId);
+
+            return Json(new { success = true, message = "Post liked successfully.", likeCount = updatedLikeCount });
+        }
+    
+
+
+        [HttpPost]
+        public async Task<IActionResult> Unlike(int BMWId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var existingLike = _context.Likes
+                .Where(like => like.UserId == currentUser.Id)
+                .FirstOrDefault(l => l.BMWId == BMWId /* && l.UserId == currentUserId if you have user authentication */);
+
+            if (existingLike == null)
+            {
+
+                return Json(new { success = false, message = "Like not found." });
             }
 
-            
-            [HttpPost]
-            public IActionResult Unlike(int postId)
-            {
-                
-                var existingLike = _context.Likes.FirstOrDefault(l => l.PostId == postId /* && l.UserId == currentUserId if you have user authentication */);
 
-                if (existingLike == null)
-                {
-                    
-                    return Json(new { success = false, message = "Like not found." });
-                }
+            _context.Likes.Remove(existingLike);
+            _context.SaveChanges();
 
-                
-                _context.Likes.Remove(existingLike);
-                _context.SaveChanges();
 
-                
-                return Json(new { success = true, message = "Like removed successfully." });
+            return Json(new { success = true, message = "Like removed successfully." });
 
-            }
         }
 
     }

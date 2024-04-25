@@ -18,6 +18,7 @@ namespace MotorcycleShowroom.Data
         public DbSet<Image> Image { get; set; }
             protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             base.OnModelCreating(modelBuilder);
                 modelBuilder.Entity<Image>()
                 .HasOne(image => image.BMW)          // Image has one BMW

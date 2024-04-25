@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MotorcycleShowroom.Models
 {
@@ -14,7 +15,7 @@ namespace MotorcycleShowroom.Models
         // Navigation property for likes
         public ICollection<Like> Likes { get; set; } = new List<Like>();
 
-        public int Id { get; set; }
+
         // Navigation property for user roles
         public UserRole Role { get; set; }
     }

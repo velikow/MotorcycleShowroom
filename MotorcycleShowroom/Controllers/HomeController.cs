@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MotorcycleShowroom.Data;
@@ -18,15 +19,27 @@ namespace MotorcycleShowroom.Controllers
             _context = context;
             _logger = logger;
         }
-
-        public async Task<IActionResult> IndexAsync()
+       
+        public async Task<IActionResult> IndexAsync(string searchPhrase)
         {
-            // Fetch all BMW objects with their images
-            var bmwsWithImages = await _context.BMW
-                    .Include(b => b.Images)
+            // Query all BMWs with their images included
+            var bmwsWithImagesQuery = _context.BMW.Include(b => b.Images);
+
+            // If searchPhrase is null or empty, return all motorcycles
+            if (string.IsNullOrEmpty(searchPhrase))
+            {
+                var allBMWsWithImages = await bmwsWithImagesQuery.ToListAsync();
+                return View(allBMWsWithImages);
+            }
+            else
+            {
+                // Filter motorcycles by searchPhrase
+                var filteredBMWsWithImages = await bmwsWithImagesQuery
+                    .Where(j => j.Motorcycles.Contains(searchPhrase))
                     .ToListAsync();
 
-            return View(bmwsWithImages);
+                return View(filteredBMWsWithImages);
+            }
         }
 
         public IActionResult Privacy()

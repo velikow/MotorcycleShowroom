@@ -1,5 +1,5 @@
 ﻿@inject ILogger<MotorcycleShowroom.Models.BMW> Logger
-@model MotorcycleShowroom.Models.BMW
+@model MotorcycleShowroom.Models.BMWDetailsViewModel
 
 <div class="overlay">
     <div class="container content-container">
@@ -8,11 +8,11 @@
                 <dl class="row">
                     <dt class="col-sm-4">
                         Motorcycle:
-                        @Model.Motorcycles
+                        @Model.Bmw.Motorcycles
                     </dt>
                     <dd class="col-sm-8">
                         Description:
-                        @Model.Info
+                        @Model.Bmw.Info
                     </dd>
                 </dl>
                 <!-- White Back button -->
@@ -23,7 +23,7 @@
                 <div class="slideshow-container">
 
                     <!-- Full-width images with number and caption text -->
-                    @foreach (var image in @Model.Images)
+                    @foreach (var image in @Model.Bmw.Images)
                     {
                         <div class="mySlides">
                             
@@ -52,9 +52,9 @@
 
 <!-- Like button and heart icon moved back to their original location -->
 <div class="like-heart-container">
-    <button id="likeButton" class="btn-like btn-white">Like</button>
+    <button id="likeButton" class="btn-like btn-white" data-bmw-id="@Model.Bmw.Id">Like</button>
     <div class="heart-container">
-        <span class="heart-icon">&hearts; <span id="countNumber" class="count-number">0</span></span>
+        <span class="heart-icon">&hearts; <span id="countNumber" class="count-number">@Model.LikesCount</span></span>
     </div>
 </div>
 
@@ -166,28 +166,62 @@
 </script>
 <script>
     $(document).ready(function () {
-        var likeCount = 0;
+        $('#likeButton').click(function (e) {
+            e.preventDefault();
+            var bmwId = $(this).data('bmw-id');
+            var likeButton = $(this); // Reference to the like button
+            var heartIcon = $('.heart-icon'); // Reference to the heart icon
 
-        console.log("Document is ready.");
+            $.ajax({
+                url: '/BMWs/Like',
+                method: 'POST',
+                data: { BMWId: bmwId },
+                success: function (response) {
+                    if (response.success) {
+                        console.log(response.message);
+                        $('#countNumber').text(response.likeCount); // Update the like count on the page
+                        likeButton.removeClass('btn-white').addClass('btn-black'); // Change the button style
+                        likeButton.text('Liked'); // Change the text of the like button
+                        heartIcon.addClass('liked'); // Add the 'liked' class to the heart icon
+                    } else {
+                        console.error('Error:', response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
 
-        $('#likeButton').click(function () {
-            console.log("Like button clicked.");
+        $('#unlikeButton').click(function (e) {
+            e.preventDefault();
+            var bmwId = $(this).data('bmw-id');
+            var likeButton = $('#likeButton'); // Reference to the like button
+            var heartIcon = $('.heart-icon'); // Reference to the heart icon
 
-            $(this).toggleClass('btn-black');
-
-            if ($(this).hasClass('btn-black')) {
-                $(this).text('Liked');
-                $('.heart-icon').addClass('liked').css('color', 'red');
-                likeCount++;
-            } else {
-                $(this).text('Like');
-                $('.heart-icon').removeClass('liked').css('color', 'white');
-                likeCount--;
-            }
-
-            console.log("Like count: " + likeCount);
-            $('#countNumber').text(likeCount);
+            $.ajax({
+                url: '/BMWs/Unlike',
+                method: 'POST',
+                data: { BMWId: bmwId },
+                success: function (response) {
+                    if (response.success) {
+                        console.log(response.message);
+                        $('#countNumber').text(response.likeCount); // Update the like count on the page
+                        likeButton.removeClass('btn-black').addClass('btn-white'); // Change the button style
+                        likeButton.text('Like'); // Change the text of the like button
+                        heartIcon.removeClass('liked'); // Remove the 'liked' class from the heart icon
+                    } else {
+                        console.error('Error:', response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
         });
     });
+
+
+
 
              </script>
